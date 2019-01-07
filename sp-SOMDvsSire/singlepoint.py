@@ -638,3 +638,5 @@ if __name__ == '__main__':
     nrg_somd = integrator.getPotentialEnergy(system)
 
     print ("nrg_somd is %s" % nrg_somd)
+    # TODO check components to work out discrepancy
+    # make test script work with various config settings (no cutoff/cutoffs)

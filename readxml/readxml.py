@@ -18,6 +18,7 @@ if __name__ == '__main__':
     # TODO
     # 3) Now we create an Amberparameters object for each molecule
     molnums = molecules.molNums()
+
     for molnum in molnums:
         mol = molecules.at(molnum)
         print (mol)

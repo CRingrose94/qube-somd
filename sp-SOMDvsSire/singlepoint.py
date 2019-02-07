@@ -93,13 +93,14 @@ equil_timestep = Parameter("equilibration timestep", 0.5 * femtosecond, """Times
 combining_rules = Parameter("combining rules", "arithmetic",
                             """Combining rules to use for the non-bonded interactions.""")
 
+
 timestep = Parameter("timestep", 2 * femtosecond, """Timestep for the dynamics simulation.""")
 
 platform = Parameter("platform", "Reference", """Which OpenMM platform should be used to perform the dynamics.""")
 
 precision = Parameter("precision", "mixed", """The floating point precision model to use during dynamics.""")
 
-constraint = Parameter("constraint", "hbonds", """The constraint model to use during dynamics.""")
+constraint = Parameter("constraint", "none", """The constraint model to use during dynamics.""")
 
 #cutoff_type = Parameter("cutoff type", "cutoffperiodic", """The cutoff method to use during the simulation.""")
 cutoff_type = Parameter("cutoff type", "nocutoff", """The cutoff method to use during the simulation.""")
@@ -215,7 +216,7 @@ def getDummies(molecule):
 
 
 
-def createSystemFreeEnergy(molecules):
+def createSystemFreeEnergy(molecules, PERT):
     r"""creates the system for free energy calculation
     Parameters
     ----------
@@ -257,7 +258,7 @@ def createSystemFreeEnergy(molecules):
 
     solute = solute.edit().rename(lig_name).commit()
 
-    perturbations_lib = PerturbationsLibrary(morphfile.val)
+    perturbations_lib = PerturbationsLibrary(PERT)
     solute = perturbations_lib.applyTemplate(solute)
 
     perturbations = solute.property("perturbations")
@@ -352,7 +353,7 @@ def createSystemFreeEnergy(molecules):
     return system
 
 
-def setupForceFieldsFreeEnergy(system, space):
+def setupForceFieldsFreeEnergy(system, space, RULE):
     r"""sets up the force field for the free energy calculation
     Parameters
     ----------
@@ -491,7 +492,7 @@ def setupForceFieldsFreeEnergy(system, space):
     else:
         system.setProperty("switchingFunction", NoCutoff())
 
-    system.setProperty("combiningRules", VariantProperty(combining_rules.val))
+    system.setProperty("combiningRules", VariantProperty(RULE))
     system.setProperty("coulombPower", VariantProperty(coulomb_power.val))
     system.setProperty("shiftDelta", VariantProperty(shift_delta.val))
 
@@ -612,12 +613,18 @@ if __name__ == '__main__':
     # 3) Check agreement of sp energies
 
     print("lambda is %s" % lambda_val.val)
+    TOP = sys.argv[1]
+    CRD = sys.argv[2]
+    PERT = sys.argv[3]
+    RULE = sys.argv[4]
+
+    #print (TOP, CRD, PERT, RULE)
 
     amber = Amber()
-    (molecules, space) = amber.readCrdTop(crdfile.val, topfile.val)
-    system = createSystemFreeEnergy(molecules)
+    (molecules, space) = amber.readCrdTop(CRD, TOP)
+    system = createSystemFreeEnergy(molecules, PERT)
      
-    system = setupForceFieldsFreeEnergy(system, space)
+    system = setupForceFieldsFreeEnergy(system, space, RULE)
     if random_seed.val:
         ranseed = random_seed.val
     else:
@@ -638,3 +645,16 @@ if __name__ == '__main__':
     nrg_somd = integrator.getPotentialEnergy(system)
 
     print ("nrg_somd is %s" % nrg_somd)
+
+    diff = nrg_sire - nrg_somd
+
+    print ("@@@@ The single point energy difference between sire and somd at lambda %s is %s " % (lambda_val.val,diff) )
+
+    # TODO check components to work out discrepancy
+    # make test script work with various config settings (no cutoff/cutoffs)
+    #print ("Detailed breakdown of Sire energies")
+    #energyComponents = system.energies()
+    #for component in energyComponents.keys():
+    #    print ("Component %s energy %s " % (component, system.energy(component)))
+        
+    

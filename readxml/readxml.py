@@ -23,6 +23,58 @@ if __name__ == '__main__':
     xmldoc = minidom.parse('pyridine/MOL_extra.xml')
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~ TAG NAME: TYPE ~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    itemlist_type = xmldoc.getElementsByTagName('Type')
+    dicts_type = []
+    for items in itemlist_type:
+        d = {}
+        for a in items.attributes.values():
+            d[a.name] = a.value
+        dicts_type.append(d)
+    dicts_tp =  str(dicts_type).split()
+    #print (dicts_tp)
+
+    name_of_typeList =[]
+    for i in range (len(dicts_tp)-1):
+        l = {}
+        if dicts_tp[i-1] == "{'name':" or dicts_tp[i-1] == "[{'name':":
+            l= dicts_tp[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
+            name_of_typeList.append(l)
+    print ("The name list of the type is:")
+    print (name_of_typeList)
+
+
+    class_of_typeList =[]
+    for i in range (len(dicts_tp)-1):
+        l = {}
+        if dicts_tp[i-1] == "'class':" :
+            l= dicts_tp[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
+            class_of_typeList.append(l)
+    print ("The class list of the type is:")
+    print (class_of_typeList)
+
+    element_of_typeList =[]
+    for i in range (len(dicts_tp)-1):
+        l = {}
+        if dicts_tp[i-1] == "'element':":
+            l= dicts_tp[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
+            element_of_typeList.append(l)
+    print ("The element list of the type is:")
+    print (element_of_typeList)
+
+    mass_of_typeList =[]
+    for i in range (len(dicts_tp)-1):
+        l = {}
+        if dicts_tp[i-1] == "'mass':":
+            l= float(dicts_tp[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
+            mass_of_typeList.append(l)
+    print ("The mass list of the type is:")
+    print (mass_of_typeList)
+    
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~ TAG NAME: ATOM ~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -75,10 +127,10 @@ if __name__ == '__main__':
 
 
     epsilonList =[]
-    for i in range (len(dicts_at)-1):
+    for i in range (len(dicts_at)):
         e = {}
         if dicts_at[i-1] == "'epsilon':":
-            e= float(dicts_at[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
+            e= float(dicts_at[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ").replace("]" , " "))
             epsilonList.append(e)
     print ("The epsilon list is:")
     print (epsilonList)
@@ -125,10 +177,10 @@ if __name__ == '__main__':
     print (lengthList)
 
     k_bondList =[]
-    for i in range (len(dicts_b)-1):
+    for i in range (len(dicts_b)):
         l = {}
         if dicts_b[i-1] == "'k':":
-            l= float(dicts_b[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
+            l= float(dicts_b[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ").replace("]" , " "))
             k_bondList.append(l)
     print ("The k_bond list is:")
     print (k_bondList)
@@ -211,9 +263,6 @@ if __name__ == '__main__':
     print (k_angle_List)
 
 
-
-
-
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~ TAG NAME: PROPER ~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -228,9 +277,6 @@ if __name__ == '__main__':
     dicts_pr =  str(dicts_proper).split()
     #print (dicts_pr)
 
-
-
-
     cl1_proper_List =[]
     for i in range ( len(dicts_pr)-1):
         l = {}
@@ -239,8 +285,6 @@ if __name__ == '__main__':
             cl1_proper_List.append(l)
     print ("The class1 proper list is:")
     print (cl1_proper_List)
-
-
 
     dct = {}
     for k in range(2,5):
@@ -253,8 +297,6 @@ if __name__ == '__main__':
                 dct["cl"+str(k)].append(l)
         print ("The class%s "%k+"proper list is:")
         print (dct["cl"+str(k)])
-
-
 
     dct = {}
     for k in range(1,5):
@@ -310,8 +352,6 @@ if __name__ == '__main__':
     dicts_impr =  str(dicts_improper).split()
     #print (dicts_impr)
 
-
-
     cl1_improper_List =[]
     for i in range ( len(dicts_impr)-1):
         l = {}
@@ -320,8 +360,6 @@ if __name__ == '__main__':
             cl1_improper_List.append(l)
     print ("The class1 improper list is:")
     print (cl1_improper_List)
-
-
 
     dct = {}
     for k in range(2,5):
@@ -334,7 +372,6 @@ if __name__ == '__main__':
                 dct["cl"+str(k)].append(l)
         print ("The class%s "%k+"improper list is:")
         print (dct["cl"+str(k)])
-
 
 
     dct = {}
@@ -411,8 +448,6 @@ if __name__ == '__main__':
     print ("The index list for virtual sites is:")
     print (index_vs_List)
 
-
-
     dct = {}
     for k in range(1,4):
         dct["atom%s" %k] = []
@@ -425,8 +460,6 @@ if __name__ == '__main__':
         print ("The atom%s "%k+" list for the virtual sites is:")
         print (dct["atom"+str(k)])
 
-
-
     dct = {}
     for k in range(1,3):
         dct["wo%s" %k] = []
@@ -438,8 +471,6 @@ if __name__ == '__main__':
                 dct["wo"+str(k)].append(l)
         print ("The wo%s "%k+" list for the virtual sites is:")
         print (dct["wo"+str(k)])
-
-
 
     dct = {}
     for k in range(1,4):

@@ -567,31 +567,84 @@ if __name__ == '__main__':
     print ("The Lennard Jones 1-4 scale is:")
     print (LJ_List)
 
-
-    # 3) Now we create an Amberparameters object for each molecule
+ # 3) Now we create an Amberparameters object for each molecule
     molnums = molecules.molNums()
 
     newmolecules = Molecules()
     for molnum in molnums:
         mol = molecules.at(molnum)
-        print (mol)
-        mol_params = AmberParameters()
+        print (mol) #Molecule( 1 version 9 : nAtoms() = 11, nResidues() = 1 )
+        mol_params = AmberParameters() #SireMol::AmberParameters()
+        
         # We populate the Amberparameters object with a list of bond, angle, dihedrals
         # We look up parameters from the contents of the xml file
         # We also have to set the atomic parameters (q, sigma, epsilon)
         editmol = mol.edit()
         atoms = editmol.atoms()
-        # We update atom parameters see setAtomParameters in SireIO/amber.cpp l2122
+        # We update atom parameters see setAtomParameters in SireIO/amber.cpp l2122 
+        natoms = editmol.nAtoms()
+        print("number of atoms is %s" %natoms)
         for atom in atoms:
+            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
             editatom = editmol.atom(atom.index())
-            editatom.setProperty("charge", -1 * mod_electron) # This should be the value for that atom read from the xml file in
-            editatom.setProperty("mass", 1.5 * g_per_mol) #
-            editatom.setProperty("LJ", LJParameter( 0.5 * angstrom, 0.5 * kcal_per_mol))
-            editatom.setProperty("ambertype", "aa")
+            print("The editatom object is %s"%editatom)
+            
+        
+            i = int(str(atom.number()).split('(')[1].replace(")" , " "))
+            #editatom.charge_xml = lambda: None
+            #setattr(editatom, 'charge_xml', chargeList)
+            #attrs = dir(editatom)
+            #print(editatom.charge_xml)
+            
+            #editatom.setProperty("charge", -1 * mod_electron) # This should be the value for that atom read from the xml file in
+            editatom.setProperty("charge", chargeList[i-1] * mod_electron)
+
+            #print(editatom.setProperty("charge", chargeList[i-1] * mod_electron))
+
+            editatom.setProperty("mass", mass_of_typeList[i-1] * g_per_mol) #
+            #print(editatom.setProperty("mass", mass_of_typeList[i-1] * g_per_mol))
+
+            editatom.setProperty("LJ", LJParameter( sigmaList[i-1] * angstrom, epsilonList[i-1] * kcal_per_mol))
+            #print(editatom.setProperty("LJ", LJParameter( sigmaList[i-1] * angstrom, epsilonList[i-1] * kcal_per_mol)))
+
+            editatom.setProperty("ambertype", typeList[i-1])
+            #print(editatom.setProperty("ambertype", typeList[i-1]))
+            
             editmol = editatom.molecule()
+            print(editmol)
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+         
+
         # Now we create a connectivity see setConnectivity in SireIO/amber.cpp l2144
         # XML data tells us how atoms are bonded in the molecule (Bond 'from' and 'to')
+        #bondfuncs = k_bondList
+        #new_bond = editmol.setProperty("bonds_new", bondfuncs).commit()
+        for atom in atoms:
+            if natoms > 1: #if numebr of atoms >1  
+                print('Set up connectivity')
 
+                #editmol.setProperty("connectivity", Connectivity(editmol.data()))
+                connect_prop = k_bondList[i-1]
+                editmol.setProperty("connectivity", connect_prop)
+                #print(Connectivity.connectionsTo(toList[i-1]))
+               
+                #editmol.setBonds(k_bondList[i-1], lengthList[i-1] )                
+                #editatom.setBonds()
+                #bondfunc = k_bondList[i-1]* lengthList[i-1]
+
+
+            if natoms > 2: 
+                print("Set up angles")
+                editmol.setProperty("angle")
+             
+
+            if natoms > 3:
+                print("Set up dihedrals")
+                editmol.setProperty("dihedral")
+                editmol.setProperty("improper")
+              #  editatom.setDihedrals()
+
+        
         # Now we add bond parameters to the Sire molecule. We also update amberparameters see SireIO/amber.cpp l2154
 
         # Now we add angle parameters to the Sire molecule. We also update amberparameters see SireIO/amber.cpp L2172
@@ -604,3 +657,4 @@ if __name__ == '__main__':
         newmolecules.add(molecule)
     # By the end of this loop we have a new set of mol that looks
     # exactly like a molecules object returned by AMber().readCrdTop(...)
+

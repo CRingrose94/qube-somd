@@ -383,11 +383,17 @@ if __name__ == '__main__':
                      float(dicts_improper[j]['k%s'%i])*(1+ Cos(int(dicts_improper[j]['periodicity%s'%i]) * phi_im - float(dicts_improper[j]['phase%s'%i]))))
             mol = editmol.setProperty("improper" , improperfuncs).commit()
 
-
-
-
         # Now we work out non bonded pairs see SireIO/amber.cpp L2213
-    
+
+        print("Set up non bonded pairs")
+        if natoms <= 3:
+            nbpairs = CLJNBPairs(editmol.info(), CLJScaleFactor(0,0))
+            mol = editmol.setProperty("intrascale" , nbpairs).commit()
+
+        else:
+            for i in range(0, nNonBonded):
+                nbpairs = CLJNBPairs(editmol.info(), CLJScaleFactor(float(dicts_nonb[i]['coulomb14scale']),float(dicts_nonb[i]['lj14scale'])))
+                mol = editmol.setProperty("intrascale" , nbpairs).commit()
 
 
         molecule = editmol.commit()

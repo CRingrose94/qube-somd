@@ -7,8 +7,10 @@ from Sire.Mol import *
 from Sire.MM import *
 from Sire.System import *
 from Sire.Units import *
-from Sire.CAS import *  
-from Sire.Maths import *
+from Sire.CAS import * 
+from Sire.Maths import * 
+import math
+
 
 if __name__ == '__main__':
     # 1) Read a pdb file describing the system to simulate
@@ -67,6 +69,8 @@ if __name__ == '__main__':
     dicts_b =  str(dicts_bond).split()
     print (dicts_b)
 
+    nbond = itemlist_bond.length
+
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~ TAG NAME: ANGLE ~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -81,7 +85,7 @@ if __name__ == '__main__':
     dicts_ang =  str(dicts_angle).split()
     print (dicts_ang)
 
-
+    nAngles= itemlist_angle.length
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~ TAG NAME: PROPER ~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -96,7 +100,7 @@ if __name__ == '__main__':
     dicts_pr =  str(dicts_proper).split()
     print (dicts_pr)
 
-
+    nProper = itemlist_proper.length
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~ TAG NAME: IMPROPER ~~~~~~~~~~~~~~~~~
@@ -111,7 +115,7 @@ if __name__ == '__main__':
         dicts_improper.append(d)
     dicts_impr =  str(dicts_improper).split()
     print (dicts_impr)
-
+    nImproper = itemlist_improper.length
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~ TAG NAME: VIRTUAL SITES ~~~~~~~~~~~~
@@ -126,7 +130,8 @@ if __name__ == '__main__':
         dicts_virtualsite.append(d)
     dicts_vs =  str(dicts_virtualsite).split()
     #print (dicts_vs)
-
+    nVirtualSites = itemlist_VirtualSite.length 
+        
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~ TAG NAME: RESIDUE ~~~~~~~~~~~~~~~~
@@ -155,7 +160,7 @@ if __name__ == '__main__':
         dicts_nonb.append(d)
     dicts_nb =  str(dicts_nonb).split()
     print (dicts_nb)
-
+    nNonBonded = itemlist_nonbond.length
 
     # 3) Now we create an Amberparameters object for each molecule
     molnums = molecules.molNums()
@@ -174,14 +179,12 @@ if __name__ == '__main__':
         # We update atom parameters see setAtomParameters in SireIO/amber.cpp l2122 
         natoms = editmol.nAtoms()
         print("number of atoms is %s" %natoms)
-        nVirtualSites = xmldoc.getElementsByTagName('VirtualSite').length #number of Virtual Sites
         
-        #atoms doesn't include the virtual sites! 
+        #nAtoms don't include the virtual sites! 
         
         for atom in atoms: 
             editatom = editmol.atom(atom.index())
-        
-            print("The editatom object is %s"%editatom)
+        #for i in range(nVirtualSites+ natoms):
             
             i = int(str(atom.number()).split('(')[1].replace(")" , " "))
             editatom.setProperty("charge", float(dicts_atom[i+natoms+nVirtualSites]['charge']) * mod_electron)
@@ -191,6 +194,8 @@ if __name__ == '__main__':
            
             editmol = editatom.molecule()
             print(editmol)
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+         
 
         # Now we create a connectivity see setConnectivity in SireIO/amber.cpp l2144
         # XML data tells us how atoms are bonded in the molecule (Bond 'from' and 'to')
@@ -212,13 +217,10 @@ if __name__ == '__main__':
 
             for j in range(0,natoms):
                 conn.connect(atoms[int(c[j][0]) ].index(), atoms[int(c[j][1]) ].index()) 
-                conn.commit()   
-            print(conn.commit)               
-            
+                   
             for atom in atoms:
-                #i = int(str(atom.number()).split('(')[1].replace(")" , " "))
-                editmol.setProperty("connectivity", conn)
-                print(editmol.setProperty("connectivity", conn))
+                editmol.setProperty("connectivity", conn.commit())
+            print(editmol.setProperty("connectivity", conn.commit()))
             
 
              # Now we add bond parameters to the Sire molecule. We also update amberparameters see SireIO/amber.cpp l2154
@@ -230,8 +232,15 @@ if __name__ == '__main__':
 
             for j in range(0,natoms):
                 bf = bondfuncs.set(atoms[int(c[j][0]) ].index(), atoms[int(c[j][1]) ].index(), float(dicts_bond[j+natoms]['k'])* (float(dicts_bond[j+natoms]['length']) - r) **2  )
-                
-            mol = editmol.setProperty("bond", bondfuncs).commit()
+                bond_id = BondID(atoms[int(c[j][0])].index(), atoms[int(c[j][1])].index())
+                print(bond_id)
+                for i in range(natoms, nbond):
+                    mol_params.add(bond_id, float(dicts_bond[i]['k']), float(dicts_bond[i]['length']) ) 
+            print(mol_params.getAllBonds() )
+
+            
+            mol_params.getAllBonds() 
+            print(mol_params.getAllBonds() )
 
         # Now we add angle parameters to the Sire molecule. We also update amberparameters see SireIO/amber.cpp L2172
         if natoms > 2:
@@ -239,7 +248,6 @@ if __name__ == '__main__':
 
             anglefuncs = ThreeAtomFunctions(mol)
 
-            nAngles= xmldoc.getElementsByTagName('Angle').length
             at1 = []
             for i in range(0, nAngles):
                 for j in range(0,natoms):
@@ -270,17 +278,21 @@ if __name__ == '__main__':
             theta = internalff.symbols().angle().theta()
             for j in range(0,natoms):
                 anglefuncs.set( atoms[at1[j]].index(), atoms[at2[j]].index(), atoms[at3[j]].index(), float(dicts_angle[j]['k']) * ( (float(dicts_angle[j]['angle']) *degrees.value() - theta )**2 ))
+                angle_id = AngleID( atoms[int(at1[j])].index(), atoms[int(at2[j])].index(), atoms[int(at3[j])].index())
+                print(angle_id)
 
-            mol = editmol.setProperty("angle" , anglefuncs).commit()
-             
+                for i in range(0, nAngles):
+                        mol_params.add(angle_id, float(dicts_angle[i]['k']), float(dicts_angle[i]['angle']) ) 
+            print(mol_params.getAllAngles() )
+
         # Now we add dihedral parameters to the Sire molecule. We also update amberparameters see SireIO/amber.cpp L2190
 
         if natoms > 3:
             print("Set up dihedrals")
 
-            amber_dihedral = AmberDihedral(dihedral.function(), Symbol("phi"))
+            #amber_dihedral = AmberDihedral(dihedral.function(), Symbol("phi"))
 
-            nProper= xmldoc.getElementsByTagName('Proper').length
+            
             di1 = []
             for i in range(0, nProper):
                 for j in range(0,natoms):
@@ -297,7 +309,7 @@ if __name__ == '__main__':
                     if dicts_proper[i]['class2']  == dicts_type[j]['class']:
                         d2 = {}
                         d2 = j
-                        di2.append(d1)
+                        di2.append(d2)
             print (di2)
 
 
@@ -310,8 +322,6 @@ if __name__ == '__main__':
                         di3.append(d3)
             print (di3)
 
-
-            
             di4 = []
             for i in range(0, nProper):
                 for j in range(0,natoms):
@@ -320,18 +330,28 @@ if __name__ == '__main__':
                         d4 = j
                         di4.append(d4)
             print (di4)
-    
 
             dihedralfuncs = FourAtomFunctions(mol)
     
             phi = internalff.symbols().dihedral().phi()
+
             for i in range(1,5):    
                 for j in range(0,nProper):
                     dihedralfuncs.set(atoms[di1[j]].index(), atoms[di2[j]].index(),atoms[di3[j]].index(),atoms[di4[j]].index(),\
                      float(dicts_proper[j]['k%s'%i])*(1+ Cos(int(dicts_proper[j]['periodicity%s'%i]) * phi - float(dicts_proper[j]['phase%s'%i]))))
-            mol = editmol.setProperty("dihedral" , dihedralfuncs).commit()
+                    dihedral_id = DihedralID( atoms[int(di1[j])].index(), atoms[int(di2[j])].index(), atoms[int(di3[j])].index(), atoms[int(di4[j])].index())
+                    print(dihedral_id) 
+                    for l in range(0, nProper ):
+                        for c in range(1,5):
+                            mol_params.add(dihedral_id, float(dicts_proper[l]['k%s'%c]), int(dicts_proper[l]['periodicity%s'%c]), float(dicts_proper[l]['phase%s'%c]) ) 
+            print(mol_params.getAllDihedrals() )
+
+            
 
             print("Set up impropers")
+
+            #amber_dihedral = AmberDihedral(dihedral.function(), Symbol("phi"))
+
             
             di_im1 = []
             for i in range(0, nImproper):
@@ -363,7 +383,6 @@ if __name__ == '__main__':
             print (di_im3)
 
 
-            
             di_im4 = []
             for i in range(0, nImproper):
                 for j in range(0,natoms):
@@ -381,26 +400,62 @@ if __name__ == '__main__':
                 for j in range(0,nImproper):
                     improperfuncs.set(atoms[di_im1[j]].index(), atoms[di_im2[j]].index(),atoms[di_im3[j]].index(),atoms[di_im4[j]].index(),\
                      float(dicts_improper[j]['k%s'%i])*(1+ Cos(int(dicts_improper[j]['periodicity%s'%i]) * phi_im - float(dicts_improper[j]['phase%s'%i]))))
+                    
+                    improper_id = ImproperID( atoms[int(di_im1[j])].index(), atoms[int(di_im2[j])].index(), atoms[int(di_im3[j])].index(), atoms[int(di_im4[j])].index())
+                    print(improper_id) 
+                    for l in range(0, nImproper ):
+                        for c in range(1,5):
+                            mol_params.add(improper_id, float(dicts_improper[l]['k%s'%c]), int(dicts_improper[l]['periodicity%s'%c]), float(dicts_improper[l]['phase%s'%c]) ) 
+            print(mol_params.getAllDihedrals() )
+
+            mol = editmol.setProperty("bond", bondfuncs).commit()
+            mol = editmol.setProperty("angle" , anglefuncs).commit()
+            mol = editmol.setProperty("dihedral" , dihedralfuncs).commit()
             mol = editmol.setProperty("improper" , improperfuncs).commit()
+
 
         # Now we work out non bonded pairs see SireIO/amber.cpp L2213
 
-        print("Set up non bonded pairs")
+
+        print("Set up nbpairs")
         if natoms <= 3:
             nbpairs = CLJNBPairs(editmol.info(), CLJScaleFactor(0,0))
-            mol = editmol.setProperty("intrascale" , nbpairs).commit()
 
         else:
             for i in range(0, nNonBonded):
                 nbpairs = CLJNBPairs(editmol.info(), CLJScaleFactor(float(dicts_nonb[i]['coulomb14scale']),float(dicts_nonb[i]['lj14scale'])))
-                mol = editmol.setProperty("intrascale" , nbpairs).commit()
-
+                
+        mol = editmol.setProperty("intrascale" , nbpairs).commit()
 
         molecule = editmol.commit()
         newmolecules.add(molecule)
+
     # By the end of this loop we have a new set of mol that looks
     # exactly like a molecules object returned by AMber().readCrdTop(...)
 
+    print('Connectivity of the molecule: ')
+    print(conn)
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
+    print("The bonds connct the following atoms:")
+    print(mol_params.getAllBonds() )
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
+    print("The angles are between the following atoms:")
+    print(mol_params.getAllAngles())
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
+    print("The dihedrals are defined by the following atoms:")
+    print(mol_params.getAllDihedrals())
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
+    print("The impropers are defined by the following atoms:")
+    print(mol_params.getAllImpropers())
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
+    
+    # 4) Loop over each molecule in the molecules object and print the molecule 
+    # and atom properties that were loaded from the xml file
+    #for mol in molecules:
 
 

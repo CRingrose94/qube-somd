@@ -430,32 +430,70 @@ if __name__ == '__main__':
         molecule = editmol.commit()
         newmolecules.add(molecule)
 
+    
     # By the end of this loop we have a new set of mol that looks
     # exactly like a molecules object returned by AMber().readCrdTop(...)
 
-    print('Connectivity of the molecule: ')
-    print(conn)
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    # print('Connectivity of the molecule: ')
+    # print(conn)
+    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
-    print("The bonds connct the following atoms:")
-    print(mol_params.getAllBonds() )
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    # print("The bonds connct the following atoms:")
+    # print(mol_params.getAllBonds() )
+    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
-    print("The angles are between the following atoms:")
-    print(mol_params.getAllAngles())
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    # print("The angles are between the following atoms:")
+    # print(mol_params.getAllAngles())
+    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
-    print("The dihedrals are defined by the following atoms:")
-    print(mol_params.getAllDihedrals())
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    # print("The dihedrals are defined by the following atoms:")
+    # print(mol_params.getAllDihedrals())
+    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
-    print("The impropers are defined by the following atoms:")
-    print(mol_params.getAllImpropers())
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    # print("The impropers are defined by the following atoms:")
+    # print(mol_params.getAllImpropers())
+    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
-    
-    # 4) Loop over each molecule in the molecules object and print the molecule 
+    # Write file to compare the xml parameters in the Amberparameters object 
+    # with the original xml file. 
+
+    new_file = open("xml_parameters.txt", "w")
+    new_file.write("\n")
+    new_file.write("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    new_file.write("\n")
+    new_file.write("~~~~~~~~~~~~~~~~   Testing the xml parameters   ~~~~~~~~~~~~~~~")
+    new_file.write("\n")
+    new_file.write("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    new_file.write("\n")
+    new_file.write("\n")
+    new_file.write("Connectivity of the molecule:\n")
+    new_file.write("{0}\n".format(conn))
+    new_file.write("\n")
+    new_file.write("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    new_file.write("\n")
+    new_file.write("The bonds connct the following atoms:\n")
+    new_file.write("{0}\n".format(str(mol_params.getAllBonds()).replace(") ),", ") ),\n")))
+    new_file.write("\n")
+    new_file.write("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    new_file.write("\n")
+    new_file.write("The angles are between the following atoms:\n")
+    new_file.write("{0}\n".format(str(mol_params.getAllAngles()).replace(") ),", ") ),\n")))
+    new_file.write("\n")
+    new_file.write("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    new_file.write("\n")
+    new_file.write("The dihedrals are defined from the following atoms:\n")
+    new_file.write("{0}\n".format(str(mol_params.getAllDihedrals()).replace(") ),", ") ),\n")))
+    new_file.write("\n")
+    new_file.write("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    new_file.write("\n")
+    new_file.write("The impropers are defined from the following atoms:\n")
+    new_file.write("{0}\n".format(str(mol_params.getAllImpropers()).replace(") ),", ") ),\n")))
+    new_file.write("\n")
+    new_file.close()
+
+# 4) Loop over each molecule in the molecules object and print the molecule 
     # and atom properties that were loaded from the xml file
     #for mol in molecules:
+
 
 

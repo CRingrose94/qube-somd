@@ -7,6 +7,7 @@ from Sire.Mol import *
 from Sire.MM import *
 from Sire.System import *
 from Sire.Units import *
+from Sire.CAS import *  
 
 
 if __name__ == '__main__':
@@ -16,12 +17,13 @@ if __name__ == '__main__':
     s = p.toSystem()
     molecules = s.molecules()
     print (molecules)
-    # 2) Now we read the xml file, and store parameters for each molecule
+
+
+     # 2) Now we read the xml file, and store parameters for each molecule
 
 
     import xml.dom.minidom as minidom
     xmldoc = minidom.parse('pyridine/MOL_extra.xml')
-
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~ TAG NAME: TYPE ~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -34,46 +36,9 @@ if __name__ == '__main__':
             d[a.name] = a.value
         dicts_type.append(d)
     dicts_tp =  str(dicts_type).split()
-    #print (dicts_tp)
-
-    name_of_typeList =[]
-    for i in range (len(dicts_tp)-1):
-        l = {}
-        if dicts_tp[i-1] == "{'name':" or dicts_tp[i-1] == "[{'name':":
-            l= dicts_tp[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
-            name_of_typeList.append(l)
-    print ("The name list of the type is:")
-    print (name_of_typeList)
+    print (dicts_tp)
 
 
-    class_of_typeList =[]
-    for i in range (len(dicts_tp)-1):
-        l = {}
-        if dicts_tp[i-1] == "'class':" :
-            l= dicts_tp[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
-            class_of_typeList.append(l)
-    print ("The class list of the type is:")
-    print (class_of_typeList)
-
-    element_of_typeList =[]
-    for i in range (len(dicts_tp)-1):
-        l = {}
-        if dicts_tp[i-1] == "'element':":
-            l= dicts_tp[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
-            element_of_typeList.append(l)
-    print ("The element list of the type is:")
-    print (element_of_typeList)
-
-    mass_of_typeList =[]
-    for i in range (len(dicts_tp)-1):
-        l = {}
-        if dicts_tp[i-1] == "'mass':":
-            l= float(dicts_tp[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
-            mass_of_typeList.append(l)
-    print ("The mass list of the type is:")
-    print (mass_of_typeList)
-    
-    
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~ TAG NAME: ATOM ~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -86,54 +51,7 @@ if __name__ == '__main__':
             d[a.name] = a.value
         dicts_atom.append(d)
     dicts_at =  str(dicts_atom).split()
-    #print (dicts_at)
-
-    nameList =[]
-    for i in range (len(dicts_at)-1):
-        name = {}
-        if dicts_at[i-1] == "{'name':" or dicts_at[i-1] == "[{'name':":
-            name= dicts_at[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
-            nameList.append(name)
-    print ("The name list is:")
-    print (nameList)
-
-    typeList =[]
-    for i in range (len(dicts_at)-1):
-        t = {}
-        if dicts_at[i-1] == "{'type':":
-            t= dicts_at[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
-            typeList.append(t)
-    print ("The type list is:")
-    print (typeList)
-
-
-    chargeList =[]
-    for i in range (len(dicts_at)-1):
-        t = {}
-        if dicts_at[i-1] == "'charge':":
-            t= float(dicts_at[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
-            chargeList.append(t)
-    print ("The charge list is:")
-    print (chargeList)
-
-    sigmaList =[]
-    for i in range (len(dicts_at)-1):
-        s = {}
-        if dicts_at[i-1] == "'sigma':":
-            s= float(dicts_at[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
-            sigmaList.append(s)
-    print ("The sigma list is:")
-    print (sigmaList)
-
-
-    epsilonList =[]
-    for i in range (len(dicts_at)):
-        e = {}
-        if dicts_at[i-1] == "'epsilon':":
-            e= float(dicts_at[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ").replace("]" , " "))
-            epsilonList.append(e)
-    print ("The epsilon list is:")
-    print (epsilonList)
+    print (dicts_at)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~ TAG NAME: BOND ~~~~~~~~~~~~~~~~~~~~~
@@ -147,61 +65,7 @@ if __name__ == '__main__':
             d[a.name] = a.value
         dicts_bond.append(d)
     dicts_b =  str(dicts_bond).split()
-    #print (dicts_b)
-
-    fromList =[]
-    for i in range (len(dicts_b)-1):
-        f = {}
-        if dicts_b[i-1] == "{'from':" or dicts_b[i-1] == "[{'from':":
-            f= int(dicts_b[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
-            fromList.append(f)
-    print ("The from list is:")
-    print (fromList)
-
-    toList =[]
-    for i in range (len(dicts_b)-1):
-        t = {}
-        if dicts_b[i-1] == "'to':":
-            t= int(dicts_b[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
-            toList.append(t)
-    print ("The to list is:")
-    print (toList)
-
-    lengthList =[]
-    for i in range (len(dicts_b)-1):
-        l = {}
-        if dicts_b[i-1] == "'length':":
-            l= float(dicts_b[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
-            lengthList.append(l)
-    print ("The length list is:")
-    print (lengthList)
-
-    k_bondList =[]
-    for i in range (len(dicts_b)):
-        l = {}
-        if dicts_b[i-1] == "'k':":
-            l= float(dicts_b[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ").replace("]" , " "))
-            k_bondList.append(l)
-    print ("The k_bond list is:")
-    print (k_bondList)
-
-    cl1List =[]
-    for i in range (len(dicts_b)-1):
-        l = {}
-        if dicts_b[i-1] == "{'class1':"or dicts_b[i-1] == "[{'class1':":
-            l= dicts_b[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
-            cl1List.append(l)
-    print ("The class1 list is:")
-    print (cl1List)
-
-    cl2List =[]
-    for i in range (len(dicts_b)-1):
-        l = {}
-        if dicts_b[i-1] == "'class2':":
-            l= dicts_b[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
-            cl2List.append(l)
-    print ("The class2 list is:")
-    print (cl2List)   
+    print (dicts_b)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~ TAG NAME: ANGLE ~~~~~~~~~~~~~~~~~~~~
@@ -215,52 +79,7 @@ if __name__ == '__main__':
             d[a.name] = a.value
         dicts_angle.append(d)
     dicts_ang =  str(dicts_angle).split()
-    #print (dicts_ang)
-
-
-
-    cl1_angle_List =[]
-    for i in range ( len(dicts_ang)-1):
-        l = {}
-        if dicts_ang[i] == "{'class1':" or dicts_ang[i] == "[{'class1':":
-            l= dicts_ang[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
-            cl1_angle_List.append(l)
-    print ("The class1 angle list is:")
-    print (cl1_angle_List)
-
-
-
-    dct = {}
-    for k in range(2,4):
-        dct["cl%s" %k] = []
-        for i in range (len(dicts_ang)-1):
-            l = {}
-            if dicts_ang[i] == "'class%s"%k+"':":
-                d={}
-                l= dicts_ang[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
-                dct["cl"+str(k)].append(l)
-        print ("The class%s "%k+"angle list is:")
-        print (dct["cl"+str(k)])
-
-
-    angle_List =[]
-    for i in range (len(dicts_ang)-1):
-        l = {}
-        if dicts_ang[i] == "'angle':":
-            l= float(dicts_ang[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
-            angle_List.append(l)
-    print ("The angle list is:")
-    print (angle_List)
-
-
-    k_angle_List =[]
-    for i in range (len(dicts_ang)-1):
-        l = {}
-        if dicts_ang[i] == "'k':":
-            l= float(dicts_ang[i+1].replace("'}]" , " ").replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
-            k_angle_List.append(l)
-    print ("The k angle list is:")
-    print (k_angle_List)
+    print (dicts_ang)
 
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -275,67 +94,8 @@ if __name__ == '__main__':
             d[a.name] = a.value
         dicts_proper.append(d)
     dicts_pr =  str(dicts_proper).split()
-    #print (dicts_pr)
+    print (dicts_pr)
 
-    cl1_proper_List =[]
-    for i in range ( len(dicts_pr)-1):
-        l = {}
-        if dicts_pr[i] == "{'class1':" or dicts_pr[i] == "[{'class1':":
-            l= dicts_pr[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
-            cl1_proper_List.append(l)
-    print ("The class1 proper list is:")
-    print (cl1_proper_List)
-
-    dct = {}
-    for k in range(2,5):
-        dct["cl%s" %k] = []
-        for i in range (len(dicts_pr)-1):
-            l = {}
-            if dicts_pr[i] == "'class%s"%k+"':":
-                d={}
-                l= dicts_pr[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
-                dct["cl"+str(k)].append(l)
-        print ("The class%s "%k+"proper list is:")
-        print (dct["cl"+str(k)])
-
-    dct = {}
-    for k in range(1,5):
-        dct["k%s" %k] = []
-        for i in range (len(dicts_pr)-1):
-            l = {}
-            if dicts_pr[i] == "'k%s"%k+"':":
-                d={}
-                l= float(dicts_pr[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
-                dct["k"+str(k)].append(l)
-        print ("The k%s "%k+"proper list is:")
-        print (dct["k"+str(k)])
-
-
-    dct = {}
-    for k in range(1,5):
-        dct["periodicity%s" %k] = []
-        for i in range (len(dicts_pr)-1):
-            l = {}
-            if dicts_pr[i] == "'periodicity%s"%k+"':":
-                d={}
-                l= int(dicts_pr[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
-                dct["periodicity"+str(k)].append(l)
-        print ("The periodicity%s "%k+"proper list is:")
-        print (dct["periodicity"+str(k)])
-
-
-
-    dct = {}
-    for k in range(1,5):
-        dct["phase%s" %k] = []
-        for i in range (len(dicts_pr)-1):
-            l = {}
-            if dicts_pr[i] == "'phase%s"%k+"':":
-                d={}
-                l= float(dicts_pr[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ").replace("]", " "))
-                dct["phase"+str(k)].append(l)
-        print ("The phase%s "%k+"proper list is:")
-        print (dct["phase"+str(k)])
 
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -350,68 +110,7 @@ if __name__ == '__main__':
             d[a.name] = a.value
         dicts_improper.append(d)
     dicts_impr =  str(dicts_improper).split()
-    #print (dicts_impr)
-
-    cl1_improper_List =[]
-    for i in range ( len(dicts_impr)-1):
-        l = {}
-        if dicts_impr[i] == "{'class1':" or dicts_impr[i] == "[{'class1':":
-            l= dicts_impr[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
-            cl1_improper_List.append(l)
-    print ("The class1 improper list is:")
-    print (cl1_improper_List)
-
-    dct = {}
-    for k in range(2,5):
-        dct["cl%s" %k] = []
-        for i in range (len(dicts_impr)-1):
-            l = {}
-            if dicts_impr[i] == "'class%s"%k+"':":
-                d={}
-                l= dicts_impr[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
-                dct["cl"+str(k)].append(l)
-        print ("The class%s "%k+"improper list is:")
-        print (dct["cl"+str(k)])
-
-
-    dct = {}
-    for k in range(1,5):
-        dct["k%s" %k] = []
-        for i in range (len(dicts_impr)-1):
-            l = {}
-            if dicts_impr[i] == "'k%s"%k+"':":
-                d={}
-                l= float(dicts_impr[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
-                dct["k"+str(k)].append(l)
-        print ("The k%s "%k+"improper list is:")
-        print (dct["k"+str(k)])
-
-
-    dct = {}
-    for k in range(1,5):
-        dct["periodicity%s" %k] = []
-        for i in range (len(dicts_impr)-1):
-            l = {}
-            if dicts_impr[i] == "'periodicity%s"%k+"':":
-                d={}
-                l= int(dicts_impr[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
-                dct["periodicity"+str(k)].append(l)
-        print ("The periodicity%s "%k+"improper list is:")
-        print (dct["periodicity"+str(k)])
-
-
-
-    dct = {}
-    for k in range(1,5):
-        dct["phase%s" %k] = []
-        for i in range (len(dicts_impr)-1):
-            l = {}
-            if dicts_impr[i] == "'phase%s"%k+"':":
-                d={}
-                l= float(dicts_impr[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ").replace("]", " "))
-                dct["phase"+str(k)].append(l)
-        print ("The phase%s "%k+"improper list is:")
-        print (dct["phase"+str(k)])
+    print (dicts_impr)
 
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -429,86 +128,6 @@ if __name__ == '__main__':
     #print (dicts_vs)
 
 
-    type_vs_List =[]
-    for i in range (len(dicts_vs)-1):
-        t = {}
-        if dicts_vs[i-1] == "[{'type':":
-            t= dicts_vs[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
-            type_vs_List.append(t)
-    print ("The type list for virtual sites is:")
-    print (type_vs_List)
-
-
-    index_vs_List =[]
-    for i in range (len(dicts_vs)-1):
-        t = {}
-        if dicts_vs[i-1] == "'index':":
-            t= dicts_vs[i].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
-            index_vs_List.append(t)
-    print ("The index list for virtual sites is:")
-    print (index_vs_List)
-
-    dct = {}
-    for k in range(1,4):
-        dct["atom%s" %k] = []
-        for i in range (len(dicts_vs)-1):
-            l = {}
-            if dicts_vs[i] == "'atom%s"%k+"':":
-                d={}
-                l= int(dicts_vs[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
-                dct["atom"+str(k)].append(l)
-        print ("The atom%s "%k+" list for the virtual sites is:")
-        print (dct["atom"+str(k)])
-
-    dct = {}
-    for k in range(1,3):
-        dct["wo%s" %k] = []
-        for i in range (len(dicts_vs)-1):
-            l = {}
-            if dicts_vs[i] == "'wo%s"%k+"':":
-                d={}
-                l= float(dicts_vs[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
-                dct["wo"+str(k)].append(l)
-        print ("The wo%s "%k+" list for the virtual sites is:")
-        print (dct["wo"+str(k)])
-
-    dct = {}
-    for k in range(1,4):
-        dct["wx%s" %k] = []
-        for i in range (len(dicts_vs)-1):
-            l = {}
-            if dicts_vs[i] == "'wx%s"%k+"':":
-                d={}
-                l= float(dicts_vs[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
-                dct["wx"+str(k)].append(l)
-        print ("The wx%s "%k+" list for the virtual sites is:")
-        print (dct["wx"+str(k)])
-
-
-    dct = {}
-    for k in range(1,4):
-        dct["wy%s" %k] = []
-        for i in range (len(dicts_vs)-1):
-            l = {}
-            if dicts_vs[i] == "'wy%s"%k+"':":
-                d={}
-                l= float(dicts_vs[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " "))
-                dct["wy"+str(k)].append(l)
-        print ("The wy%s "%k+" list for the virtual sites is:")
-        print (dct["wy"+str(k)])
-
-    dct = {}
-    for k in range(1,4):
-        dct["p%s" %k] = []
-        for i in range (len(dicts_vs)-1):
-            l = {}
-            if dicts_vs[i] == "'p%s"%k+"':":
-                d={}
-                l= dicts_vs[i+1].replace("'," , " ").replace("," , " ").replace("}" , " ").replace("'" , " ")
-                dct["p"+str(k)].append(l)
-        print ("The p%s "%k+" list for the virtual sites is:")
-        print (dct["p"+str(k)])
-
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~ TAG NAME: RESIDUE ~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -521,17 +140,7 @@ if __name__ == '__main__':
             d[a.name] = a.value
         dicts_residue.append(d)
     dicts_res =  str(dicts_residue).split()
-#    print (dicts_res)
-
-
-    residue_List =[]
-    for i in range (len(dicts_res)):
-        t = {}
-        if dicts_res[i-1] == "[{'name':":
-            t= dicts_res[i].replace("'," , " ").replace("," , " ").replace("}]" , " ").replace("'" , " ")
-            residue_List.append(t)
-    print ("The residue name is:")
-    print (residue_List)
+    print (dicts_res)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~ TAG NAME: NON BONDED FORCE ~~~~~~~~~~~~~~~~
@@ -545,29 +154,10 @@ if __name__ == '__main__':
             d[a.name] = a.value
         dicts_nonb.append(d)
     dicts_nb =  str(dicts_nonb).split()
- #   print (dicts_nb)
+    print (dicts_nb)
 
 
-    coulomb_List =[]
-    for i in range (len(dicts_nb)):
-        t = {}
-        if dicts_nb[i-1] == "[{'coulomb14scale':":
-            t= float(dicts_nb[i].replace("'," , " ").replace("," , " ").replace("}]" , " ").replace("'" , " "))
-            coulomb_List.append(t)
-    print ("The coulomb 1-4 scale is:")
-    print (coulomb_List)
-
-
-    LJ_List =[]
-    for i in range (len(dicts_nb)):
-        t = {}
-        if dicts_nb[i-1] == "'lj14scale':":
-            t= float(dicts_nb[i].replace("'," , " ").replace("," , " ").replace("}]" , " ").replace("'" , " "))
-            LJ_List.append(t)
-    print ("The Lennard Jones 1-4 scale is:")
-    print (LJ_List)
-
- # 3) Now we create an Amberparameters object for each molecule
+    # 3) Now we create an Amberparameters object for each molecule
     molnums = molecules.molNums()
 
     newmolecules = Molecules()
@@ -584,77 +174,165 @@ if __name__ == '__main__':
         # We update atom parameters see setAtomParameters in SireIO/amber.cpp l2122 
         natoms = editmol.nAtoms()
         print("number of atoms is %s" %natoms)
-        for atom in atoms:
-            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        nVirtualSites = xmldoc.getElementsByTagName('VirtualSite').length #number of Virtual Sites
+        
+        #atoms doesn't include the virtual sites! 
+        
+        for atom in atoms: 
             editatom = editmol.atom(atom.index())
+        
             print("The editatom object is %s"%editatom)
             
-        
             i = int(str(atom.number()).split('(')[1].replace(")" , " "))
-            #editatom.charge_xml = lambda: None
-            #setattr(editatom, 'charge_xml', chargeList)
-            #attrs = dir(editatom)
-            #print(editatom.charge_xml)
-            
-            #editatom.setProperty("charge", -1 * mod_electron) # This should be the value for that atom read from the xml file in
-            editatom.setProperty("charge", chargeList[i-1] * mod_electron)
-
-            #print(editatom.setProperty("charge", chargeList[i-1] * mod_electron))
-
-            editatom.setProperty("mass", mass_of_typeList[i-1] * g_per_mol) #
-            #print(editatom.setProperty("mass", mass_of_typeList[i-1] * g_per_mol))
-
-            editatom.setProperty("LJ", LJParameter( sigmaList[i-1] * angstrom, epsilonList[i-1] * kcal_per_mol))
-            #print(editatom.setProperty("LJ", LJParameter( sigmaList[i-1] * angstrom, epsilonList[i-1] * kcal_per_mol)))
-
-            editatom.setProperty("ambertype", typeList[i-1])
-            #print(editatom.setProperty("ambertype", typeList[i-1]))
-            
+            editatom.setProperty("charge", float(dicts_atom[i+natoms+nVirtualSites]['charge']) * mod_electron)
+            editatom.setProperty("mass", float(dicts_type[i-1]['mass']) * g_per_mol) #
+            editatom.setProperty("LJ", LJParameter( float(dicts_atom[i+natoms+nVirtualSites]['sigma']) * angstrom, float(dicts_atom[i+natoms+nVirtualSites]['epsilon']) * kcal_per_mol))
+            editatom.setProperty("ambertype", dicts_atom[i+natoms+nVirtualSites]['type'])
+           
             editmol = editatom.molecule()
             print(editmol)
-            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-         
 
         # Now we create a connectivity see setConnectivity in SireIO/amber.cpp l2144
         # XML data tells us how atoms are bonded in the molecule (Bond 'from' and 'to')
         #bondfuncs = k_bondList
         #new_bond = editmol.setProperty("bonds_new", bondfuncs).commit()
-        for atom in atoms:
-            if natoms > 1: #if numebr of atoms >1  
-                print('Set up connectivity')
+        if natoms > 1:
+            print("Set up connectivity")
 
-                #editmol.setProperty("connectivity", Connectivity(editmol.data()))
-                connect_prop = k_bondList[i-1]
-                editmol.setProperty("connectivity", connect_prop)
-                #print(Connectivity.connectionsTo(toList[i-1]))
-               
-                #editmol.setBonds(k_bondList[i-1], lengthList[i-1] )                
-                #editatom.setBonds()
-                #bondfunc = k_bondList[i-1]* lengthList[i-1]
+            c = []
+            for atom in atoms:
+                i = int(str(atom.number()).split('(')[1].replace(")" , " "))
+                if natoms > 1: #if numebr of atoms >1  
+                    connect_prop= {}
+                    connect_prop = dicts_bond[i-1]['from'], dicts_bond[i-1]['to']
+                c.append(connect_prop)
+            print(c)
 
+            conn = Connectivity(editmol.info()).edit()
 
-            if natoms > 2: 
-                print("Set up angles")
-                editmol.setProperty("angle")
-             
+            for j in range(0,natoms):
+                conn.connect(atoms[int(c[j][0]) ].index(), atoms[int(c[j][1]) ].index()) 
+                conn.commit()   
+            print(conn.commit)               
+            
+            for atom in atoms:
+                #i = int(str(atom.number()).split('(')[1].replace(")" , " "))
+                editmol.setProperty("connectivity", conn)
+                print(editmol.setProperty("connectivity", conn))
+            
 
-            if natoms > 3:
-                print("Set up dihedrals")
-                editmol.setProperty("dihedral")
-                editmol.setProperty("improper")
-              #  editatom.setDihedrals()
+             # Now we add bond parameters to the Sire molecule. We also update amberparameters see SireIO/amber.cpp l2154
 
-        
-        # Now we add bond parameters to the Sire molecule. We also update amberparameters see SireIO/amber.cpp l2154
+            internalff = InternalFF()
+                    
+            bondfuncs = TwoAtomFunctions(mol)
+            r = internalff.symbols().bond().r()
+
+            for j in range(0,natoms):
+                bf = bondfuncs.set(atoms[int(c[j][0]) ].index(), atoms[int(c[j][1]) ].index(), float(dicts_bond[j+natoms]['k'])* (float(dicts_bond[j+natoms]['length']) - r) **2  )
+                
+            mol = editmol.setProperty("bond", bondfuncs).commit()
 
         # Now we add angle parameters to the Sire molecule. We also update amberparameters see SireIO/amber.cpp L2172
+        if natoms > 2:
+            print("Set up angles")
 
+            anglefuncs = ThreeAtomFunctions(mol)
+
+            nAngles= xmldoc.getElementsByTagName('Angle').length
+            at1 = []
+            for i in range(0, nAngles):
+                for j in range(0,natoms):
+                    if dicts_angle[i]['class1']  == dicts_type[j]['class']:
+                        a1 = {}
+                        a1 = j
+                        at1.append(a1)
+            print (at1)
+
+            at2 = []
+            for i in range(0, nAngles):
+                for j in range(0,natoms):
+                    if dicts_angle[i]['class2']  == dicts_type[j]['class']:
+                        a2 = {}
+                        a2 = j
+                        at2.append(a2)
+            print (at2)
+
+            at3 = []
+            for i in range(0, nAngles):
+                for j in range(0,natoms):
+                    if dicts_angle[i]['class3']  == dicts_type[j]['class']:
+                        a3 = {}
+                        a3 = j
+                        at3.append(a3)
+            print (at3)
+
+            theta = internalff.symbols().angle().theta()
+            for j in range(0,natoms):
+                anglefuncs.set( atoms[at1[j]].index(), atoms[at2[j]].index(), atoms[at3[j]].index(), float(dicts_angle[j]['k']) * ( (float(dicts_angle[j]['angle']) *degrees.value() - theta )**2 ))
+
+            mol = editmol.setProperty("angle" , anglefuncs).commit()
+             
         # Now we add dihedral parameters to the Sire molecule. We also update amberparameters see SireIO/amber.cpp L2190
 
+        if natoms > 3:
+            print("Set up dihedrals")
+
+            amber_dihedral = AmberDihedral(dihedral.function(), Symbol("phi"))
+
+            nProper= xmldoc.getElementsByTagName('Proper').length
+            di1 = []
+            for i in range(0, nProper):
+                for j in range(0,natoms):
+                    if dicts_proper[i]['class1']  == dicts_type[j]['class']:
+                        d1 = {}
+                        d1 = j
+                        di1.append(d1)
+            print (di1)
+
+
+            di2 = []
+            for i in range(0, nProper):
+                for j in range(0,natoms):
+                    if dicts_proper[i]['class2']  == dicts_type[j]['class']:
+                        d2 = {}
+                        d2 = j
+                        di2.append(d1)
+            print (di2)
+
+
+            di3 = []
+            for i in range(0, nProper):
+                for j in range(0,natoms):
+                    if dicts_proper[i]['class3']  == dicts_type[j]['class']:
+                        d3 = {}
+                        d3 = j
+                        di3.append(d3)
+            print (di3)
+
+
+            
+            di4 = []
+            for i in range(0, nProper):
+                for j in range(0,natoms):
+                    if dicts_proper[i]['class1']  == dicts_type[j]['class']:
+                        d4 = {}
+                        d4 = j
+                        di4.append(d4)
+            print (di4)
+    
+     
+
+
         # Now we work out non bonded pairs see SireIO/amber.cpp L2213
-        
+    
+
+
         molecule = editmol.commit()
         newmolecules.add(molecule)
     # By the end of this loop we have a new set of mol that looks
     # exactly like a molecules object returned by AMber().readCrdTop(...)
+
+
+
 

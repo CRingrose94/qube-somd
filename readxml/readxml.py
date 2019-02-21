@@ -8,7 +8,7 @@ from Sire.MM import *
 from Sire.System import *
 from Sire.Units import *
 from Sire.CAS import *  
-
+from Sire.Maths import *
 
 if __name__ == '__main__':
     # 1) Read a pdb file describing the system to simulate
@@ -315,13 +315,75 @@ if __name__ == '__main__':
             di4 = []
             for i in range(0, nProper):
                 for j in range(0,natoms):
-                    if dicts_proper[i]['class1']  == dicts_type[j]['class']:
+                    if dicts_proper[i]['class4']  == dicts_type[j]['class']:
                         d4 = {}
                         d4 = j
                         di4.append(d4)
             print (di4)
     
-     
+
+            dihedralfuncs = FourAtomFunctions(mol)
+    
+            phi = internalff.symbols().dihedral().phi()
+            for i in range(1,5):    
+                for j in range(0,nProper):
+                    dihedralfuncs.set(atoms[di1[j]].index(), atoms[di2[j]].index(),atoms[di3[j]].index(),atoms[di4[j]].index(),\
+                     float(dicts_proper[j]['k%s'%i])*(1+ Cos(int(dicts_proper[j]['periodicity%s'%i]) * phi - float(dicts_proper[j]['phase%s'%i]))))
+            mol = editmol.setProperty("dihedral" , dihedralfuncs).commit()
+
+            print("Set up impropers")
+            
+            di_im1 = []
+            for i in range(0, nImproper):
+                for j in range(0,natoms):
+                    if dicts_improper[i]['class1']  == dicts_type[j]['class']:
+                        d1 = {}
+                        d1 = j
+                        di_im1.append(d1)
+            print (di_im1)
+
+
+            di_im2 = []
+            for i in range(0, nImproper):
+                for j in range(0,natoms):
+                    if dicts_improper[i]['class2']  == dicts_type[j]['class']:
+                        d2 = {}
+                        d2 = j
+                        di_im2.append(d2)
+            print (di_im2)
+
+
+            di_im3 = []
+            for i in range(0, nImproper):
+                for j in range(0,natoms):
+                    if dicts_improper[i]['class3']  == dicts_type[j]['class']:
+                        d3 = {}
+                        d3 = j
+                        di_im3.append(d3)
+            print (di_im3)
+
+
+            
+            di_im4 = []
+            for i in range(0, nImproper):
+                for j in range(0,natoms):
+                    if dicts_improper[i]['class4']  == dicts_type[j]['class']:
+                        d4 = {}
+                        d4 = j
+                        di_im4.append(d4)
+            print (di_im4)
+
+
+            improperfuncs = FourAtomFunctions(mol)
+    
+            phi_im = internalff.symbols().improper().phi()
+            for i in range(1,5):    
+                for j in range(0,nImproper):
+                    improperfuncs.set(atoms[di_im1[j]].index(), atoms[di_im2[j]].index(),atoms[di_im3[j]].index(),atoms[di_im4[j]].index(),\
+                     float(dicts_improper[j]['k%s'%i])*(1+ Cos(int(dicts_improper[j]['periodicity%s'%i]) * phi_im - float(dicts_improper[j]['phase%s'%i]))))
+            mol = editmol.setProperty("improper" , improperfuncs).commit()
+
+
 
 
         # Now we work out non bonded pairs see SireIO/amber.cpp L2213

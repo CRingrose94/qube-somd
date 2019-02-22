@@ -9,12 +9,14 @@ from Sire.System import *
 from Sire.Units import *
 from Sire.CAS import * 
 from Sire.Maths import * 
-import math
 
 
-if __name__ == '__main__':
+
+def xmlParameters(pdbfile, xmlfile):
     # 1) Read a pdb file describing the system to simulate
-    pdbfile = 'pyridine/MOL.pdb'
+
+    # xmlfile = 'pyridine/MOL.xml'
+    # pdbfile = 'pyridine/MOL.pdb'
     p = PDB2(pdbfile)
     s = p.toSystem()
     molecules = s.molecules()
@@ -25,7 +27,7 @@ if __name__ == '__main__':
 
 
     import xml.dom.minidom as minidom
-    xmldoc = minidom.parse('pyridine/MOL_extra.xml')
+    xmldoc = minidom.parse(xmlfile)
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~ TAG NAME: TYPE ~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -276,7 +278,7 @@ if __name__ == '__main__':
             print (at3)
 
             theta = internalff.symbols().angle().theta()
-            for j in range(0,natoms):
+            for j in range(0,nAngles):
                 anglefuncs.set( atoms[at1[j]].index(), atoms[at2[j]].index(), atoms[at3[j]].index(), float(dicts_angle[j]['k']) * ( (float(dicts_angle[j]['angle']) *degrees.value() - theta )**2 ))
                 angle_id = AngleID( atoms[int(at1[j])].index(), atoms[int(at2[j])].index(), atoms[int(at3[j])].index())
                 print(angle_id)
@@ -292,6 +294,16 @@ if __name__ == '__main__':
 
             #amber_dihedral = AmberDihedral(dihedral.function(), Symbol("phi"))
 
+            # dct = {}
+            # for c in range(1,5):
+            #     dct['di%s'%c] = []
+            #     for i in range(0, nProper):
+            #         for j in range(0,natoms):
+            #             if dicts_proper[i]['class%s'%c]  == dicts_type[j]['class']:
+            #                 dct['d%s'%c] = {}
+            #                 dct['d%s'%c ]= j
+            # dct['di%s'%c].append(dct['d%s'%c])
+            # print(dct['di%s'%c])
             
             di1 = []
             for i in range(0, nProper):
@@ -395,6 +407,8 @@ if __name__ == '__main__':
 
             improperfuncs = FourAtomFunctions(mol)
     
+            
+    
             phi_im = internalff.symbols().improper().phi()
             for i in range(1,5):    
                 for j in range(0,nImproper):
@@ -424,38 +438,15 @@ if __name__ == '__main__':
         else:
             for i in range(0, nNonBonded):
                 nbpairs = CLJNBPairs(editmol.info(), CLJScaleFactor(float(dicts_nonb[i]['coulomb14scale']),float(dicts_nonb[i]['lj14scale'])))
-                
+        mol_params.add14Pair(bond_id, float(dicts_nonb[i]['coulomb14scale']),float(dicts_nonb[i]['lj14scale']) )        
         mol = editmol.setProperty("intrascale" , nbpairs).commit()
 
         molecule = editmol.commit()
         newmolecules.add(molecule)
 
-    
     # By the end of this loop we have a new set of mol that looks
     # exactly like a molecules object returned by AMber().readCrdTop(...)
 
-    # print('Connectivity of the molecule: ')
-    # print(conn)
-    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
-    # print("The bonds connct the following atoms:")
-    # print(mol_params.getAllBonds() )
-    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
-    # print("The angles are between the following atoms:")
-    # print(mol_params.getAllAngles())
-    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
-    # print("The dihedrals are defined by the following atoms:")
-    # print(mol_params.getAllDihedrals())
-    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
-    # print("The impropers are defined by the following atoms:")
-    # print(mol_params.getAllImpropers())
-    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
-    # Write file to compare the xml parameters in the Amberparameters object 
-    # with the original xml file. 
 
     new_file = open("xml_parameters.txt", "w")
     new_file.write("\n")
@@ -495,5 +486,7 @@ if __name__ == '__main__':
     # and atom properties that were loaded from the xml file
     #for mol in molecules:
 
+if __name__ == '__main__':
+    xmlParameters('pyridine/MOL.pdb', 'pyridine/MOL_extra.xml')
 
 

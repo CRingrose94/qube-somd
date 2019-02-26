@@ -140,8 +140,7 @@ def readXmlParameters(pdbfile, xmlfile):
     dicts_vs =  str(dicts_virtualsite).split()
     #print (dicts_vs)
     nVirtualSites = itemlist_VirtualSite.length 
-        
-
+   
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~ TAG NAME: RESIDUE ~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -178,6 +177,9 @@ def readXmlParameters(pdbfile, xmlfile):
     for molnum in molnums:
         mol = molecules.at(molnum)
         print (mol) #Molecule( 1 version 9 : nAtoms() = 11, nResidues() = 1 )
+        # Add potential virtual site parameters
+        if len(dicts_virtualsite) > 0:
+            mol = mol.edit().setProperty("virtual-sites", vsiteListToProperty(dicts_virtualsite)).commit()
         # We populate the Amberparameters object with a list of bond, angle, dihedrals
         # We look up parameters from the contents of the xml file
         # We also have to set the atomic parameters (q, sigma, epsilon)
@@ -188,31 +190,30 @@ def readXmlParameters(pdbfile, xmlfile):
         natoms = editmol.nAtoms()
         print("number of atoms is %s" %natoms)
 
-        vsites = []
         for atom in atoms: 
             editatom = editmol.atom(atom.index())
-            i = int(str(atom.number()).split('(')[1].replace(")" , " "))
+            #i = int(str(atom.number()).split('(')[1].replace(")" , " "))
+            i = atom.number().value()
             editatom.setProperty("charge", float(dicts_atom[i+natoms+nVirtualSites]['charge']) * mod_electron)
             editatom.setProperty("mass", float(dicts_type[i-1]['mass']) * g_per_mol) #
             editatom.setProperty("LJ", LJParameter( float(dicts_atom[i+natoms+nVirtualSites]['sigma']) * angstrom, float(dicts_atom[i+natoms+nVirtualSites]['epsilon']) * kcal_per_mol))
             editatom.setProperty("ambertype", dicts_atom[i+natoms+nVirtualSites]['type'])
 
-            #IF THE ATOM IS A VIRTUAL SITE MAKE A DICTIONARY OF THE V-SITE PARAMETERS AND ADD TO vsites (see line below)
-            vsitedict = {"type": "localCoords", "index" : 11, "atom1" : 3}
-            vsites.append(vsitedict)
+
             
             editmol = editatom.molecule()
             #print(editmol)
             #print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
-        editmol.setProperty("virtual-sites", vsiteListToProperty(vsites))
+
 
         # Now we create a connectivity see setConnectivity in SireIO/amber.cpp l2144
         if natoms > 1:
             print("Set up connectivity")
             c = []
             for atom in atoms:
-                i = int(str(atom.number()).split('(')[1].replace(")" , " "))
+                #i = int(str(atom.number()).split('(')[1].replace(")" , " "))
+                i = atom.number().value()
                 connect_prop= {}
                 connect_prop = dicts_bond[i-1]['from'], dicts_bond[i-1]['to']
                 c.append(connect_prop)

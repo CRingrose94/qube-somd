@@ -21,7 +21,7 @@ rm prot-lig.prm7 prot-lig.rst7
 combine.py --system1 _ligands/14d.prm7 _ligands/14d.rst7 --system2 _protein/protein-gas.prm7 _protein/protein-gas.rst7 --output prot-lig
 solvate.py --input prot-lig.prm7 prot-lig.rst7 --output _solvated-complexes/14d_prot_water --water tip3p --extent 20
 ## Step 5 BSS Run an MD equilibration for each solvated system 
-### This script to be written. Julien will check if existing scripts can do this. Should do minimisation, 100 ps NVT, 900 ps NPT using SOMD ideally
+### This script to be written. Julien will check if a script based on  https://github.com/michellab/BioSimSpace/blob/devel/demo/amber.py. Should do minimisation, 100 ps NVT, 900 ps NPT using SOMD ideally
 ### equilibrate.py --input _solvated-ligands/12_water --protocol default
 ### equilibrate.py --input _solvated-ligands/14d_water --protocol default
 ### equilibrate.py --input _solvated-complexes/12_prot_water --protocol default

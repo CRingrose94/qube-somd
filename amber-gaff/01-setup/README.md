@@ -11,7 +11,7 @@ combine.py --system1 _protein/prot-1plus2.prm7 _protein/prot-1plus2.rst7 --syste
 ## Step 2 BSS: Parameterise a list of ligands 
 parameterise.py --input ligands.pdb/12.pdb --forcefield gaff2 --output _ligands/12
 parameterise.py --input ligands.pdb/14d.pdb --forcefield gaff2 --output _ligands/14d
-## Step 3 BSS: Solvate each ligand  # solvate.py -
+## Step 3 BSS: Solvate each ligand  
 solvate.py --input _ligands/12.prm7 _ligands/12.rst7 --output _solvated-ligands/12_water --water tip3p --extent 20
 solvate.py --input _ligands/14d.prm7 _ligands/14d.rst7 --output _solvated-ligands/14d_water --water tip3p --extent 20
 ## Step 4 BSS: Assemble each protein-ligand complex and solvate 
@@ -32,8 +32,9 @@ prepareFEP.py --input1 _solvated-ligands/12_water.prm7 _solvated-ligands/12_wate
 prepareFEP.py --input1 _solvated-ligands/12_prot_water.prm7 _solvated-ligands/12_prot_water_eq.rst7 --input2 _solvated-ligands/14d_prot_water.prm7 _solvated-ligands/14d_prot_water_eq.rst7 --output _solvated-perturbations-complexes/12_to_14d_bound
 
 This will complete the setup of the input files for a SOMD relative FEP. 
-The next steps to implement should be in a separate folder that can be packed and copied around. 
-To implement them, create a new subfolder in amber-gaff and create a protocol and run folder. e.g.
+If this is working, then we need to write a drive script that can run steps 1-6 for a dataset of N ligands and M perturbations. 
+
+The next steps is to implement the actual running of the simulations. To implement this, create a new subfolder in amber-gaff and create a protocol and run folder. e.g.
 
 01-setup
 02-protocol

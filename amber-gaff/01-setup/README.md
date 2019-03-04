@@ -5,6 +5,7 @@ https://github.com/michellab/BioSimSpace/tree/devel/nodes/playground
 parameterise.py --input protein.pdb/protein-model-01.pdb --forcefield ff14SB --output _protein/protein-model-01
 parameterise.py --input protein.pdb/protein-model-02.pdb --forcefield ff14SB --output _protein/protein-model-02
 parameterise.py --input protein.pdb/protein-model-03.pdb --forcefield ff14SB --output _protein/protein-model-03
+(TODO: clarify if we should retain specific Xtal waters in input)
 ### Now combine
 combine.py --system1 _protein/protein-model-01.prm7 _protein/protein-model-01.rst7 --system2 _protein/protein-model-02.prm7 _protein/protein-model-02.rst7 --output _protein/prot-1plus2
 combine.py --system1 _protein/prot-1plus2.prm7 _protein/prot-1plus2.rst7 --system2 _protein/protein-model-03 --output _protein/protein-gas

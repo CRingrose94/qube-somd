@@ -26,9 +26,22 @@ solvate.py --input prot-lig.prm7 prot-lig.rst7 --output _solvated-complexes/14d_
 ### equilibrate.py --input _solvated-ligands/14d_water --protocol default
 ### equilibrate.py --input _solvated-complexes/12_prot_water --protocol default
 ### equilibrate.py --input _solvated-complexes/14d_prot_water --protocol default
+
 ## Step 6 BSS: run prepareFEP on every pair of ligands
 prepareFEP.py --input1 _solvated-ligands/12_water.prm7 _solvated-ligands/12_water_eq.rst7 --input2 _solvated-ligands/14d_water.prm7 _solvated-ligands/14d_water_eq.rst7 --output _solvated-perturbations-ligands/12_to_14d_free
 prepareFEP.py --input1 _solvated-ligands/12_prot_water.prm7 _solvated-ligands/12_prot_water_eq.rst7 --input2 _solvated-ligands/14d_prot_water.prm7 _solvated-ligands/14d_prot_water_eq.rst7 --output _solvated-perturbations-complexes/12_to_14d_bound
-## Step 7 SOMD/CSD3: Setup SOMD run folder for dataset
-## Step 8 SOMD/CSD3: Submit jobs 
-## Step 9 freenrg workflows: Process free energies and generate report. 
+
+This will complete the setup of the input files for a SOMD relative FEP. 
+The next steps to implement should be in a separate folder that can be packed and copied around. 
+To implement them, create a new subfolder in amber-gaff and create a protocol and run folder. e.g.
+
+01-setup
+02-protocol
+03-run
+
+The contents of these folders should be similar to what was done here
+
+https://github.com/michellab/somdfreenrgbatch
+
+You will need to edit the script in run/setup.py to collect the relevant input files from the 01-setup folder. 
+

@@ -417,53 +417,41 @@ def readXmlParameters(pdbfile, xmlfile):
             # Now we work out non bonded pairs see SireIO/amber.cpp L2213
 
 
-            print("Set up nbpairs")
 
-            one_three_inter_list = []
-            for i in range(0, len(c)):
-                for j in range(0,2):
-                    for k in range(0, len(c)):
-                        for l in range(0,2):
-                            if c[i][j] == c[k][l] and c[i] != c[k]:
-                                one_three = {}
-                                one_three = (c[i], c[k])
-                                one_three_inter_list.append(one_three)
-            print(one_three_inter_list)
+        print("Set up nbpairs")
 
-            one_three_interactions = []
-            for i in range(0, len(one_three_inter_list)):
-                for j in range(0,1):
-                    for k in range(0,1): 
-                        ot = {}
-                        if one_three_inter_list[i][j][k]== one_three_inter_list[i][j+1][k]:
-                            ot = (one_three_inter_list[i][j][k+1], one_three_inter_list[i][j+1][k+1])
-                            one_three_interactions.append(ot)
-                        elif one_three_inter_list[i][j][k]== one_three_inter_list[i][j+1][k+1]:
-                            ot = (one_three_inter_list[i][j][k+1], one_three_inter_list[i][j+1][k])
-                            one_three_interactions.append(ot)
-                        elif (one_three_inter_list[i][j][k+1], one_three_inter_list[i][j+1][k+1]):
-                            ot = (one_three_inter_list[i][j][k], one_three_inter_list[i][j+1][k])
-                            one_three_interactions.append(ot)
-                        elif (one_three_inter_list[i][j][k+1], one_three_inter_list[i][j+1][k]):
-                            ot = (one_three_inter_list[i][j][k], one_three_inter_list[i][j+1][k])
-                            one_three_interactions.append(ot)
-            print("The 1-3 interactions are:")
-            print(one_three_interactions)
+        if natoms <= 3:
+            import re
+            scale_factor1 = 0
+            scale_factor2 = 0
+            nbpairs = CLJNBPairs(editmol.info(), CLJScaleFactor(scale_factor1,scale_factor2))
 
-            nbpairs = CLJNBPairs(editmol.info(), CLJScaleFactor(0,0))
-            for i in range(0, len(one_three_interactions)):
-                nbpairs.set(atoms.index(int(one_three_interactions[i][0])), atoms.index(int(one_three_interactions[i][1])), CLJScaleFactor(0,0))
+            for i in range(0, len(Connectivity(atoms).getBonds())):
+                getB = str(Connectivity(atoms).getBonds()[i])
+                nbpairs.set(atoms.index( int(re.findall('\d+',getB)[0])), atoms.index(int(re.findall('\d+',getB)[1])), CLJScaleFactor(scale_factor1,scale_factor2))
+                mol = editmol.setProperty("intrascale" , nbpairs).commit()
+
+            for i in range(0, len(Connectivity(atoms).getAngles())):
+                getA = str(Connectivity(atoms).getAngles()[i])
+                nbpairs.set(atoms.index( int(re.findall('\d+',getA)[0])), atoms.index(int(re.findall('\d+',getA)[1])), CLJScaleFactor(scale_factor1,scale_factor2))
+                mol = editmol.setProperty("intrascale" , nbpairs).commit()
+
+        elif natoms <= 4:
+            import re
+            scale_factor1 = float(dicts_nonb[i]['coulomb14scale'])
+            scale_factor2 = float(dicts_nonb[i]['lj14scale'])
+            nbpairs = CLJNBPairs(editmol.info(), CLJScaleFactor(scale_factor1,scale_factor2))
+
+            for i in range(0, len(Connectivity(atoms).getDihedrals())):
+                getD = str(Connectivity(atoms).getDihedrals()[i])
+                nbpairs.set(atoms.index( int(re.findall('\d+',getD)[0])), atoms.index(int(re.findall('\d+',getD)[1])), CLJScaleFactor(scale_factor1,scale_factor2))
+                mol = editmol.setProperty("intrascale" , nbpairs).commit()
+
+        else: 
+            scale_factor1 = 1
+            scale_factor2 = 1
+            nbpairs = CLJNBPairs(editmol.info(), CLJScaleFactor(scale_factor1,scale_factor2))
             mol = editmol.setProperty("intrascale" , nbpairs).commit()
-
-            
-#             if natoms <= 3:
-#                 nbpairs = CLJNBPairs(editmol.info(), CLJScaleFactor(0,0))
-
-#             else:
-#                 for i in range(0, nNonBonded):
-#                     nbpairs = CLJNBPairs(editmol.info(), CLJScaleFactor(float(dicts_nonb[i]['coulomb14scale']),float(dicts_nonb[i]['lj14scale'])))
-#             mol_params.add14Pair(bond_id, float(dicts_nonb[i]['coulomb14scale']),float(dicts_nonb[i]['lj14scale']) )        
-#             mol = editmol.setProperty("intrascale" , nbpairs).commit()
 
             molecule = editmol.commit()
             newmolecules.add(molecule)

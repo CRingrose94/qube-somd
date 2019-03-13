@@ -39,13 +39,13 @@ solvate.py --input prot-lig.prm7 prot-lig.rst7 --output _solvated-complexes/14d_
 !! amberequilibration.py is work in progress
 
 
-amberequilibration.py --input _solvated-ligands/12_water --output 12_water_eq
+amberequilibration.py --input _solvated-ligands/12_water.prm7 _solvated-ligands/12_water.rst7 --output 12_water_eq
 
-amberequilibration.py --input _solvated-ligands/14d_water --output 14d_water_eq
+amberequilibration.py --input _solvated-ligands/14d_water.prm7 _solvated-ligands/14d_water.rst7 --output 14d_water_eq
 
-amberequilibration.py --input _solvated-complexes/12_prot_water --output 12_prot_water_eq
+amberequilibration.py --input _solvated-complexes/12_prot_water.prm7 _solvated-complexes/12_prot_water.rst7  --output 12_prot_water_eq
 
-amberequilibration.py --input _solvated-complexes/14d_prot_water --output 14d_prot_water_eq
+amberequilibration.py --input _solvated-complexes/14d_prot_water.prm7 _solvated-complexes/14d_prot_water.rst7 --output 14d_prot_water_eq
 
 ## Step 6 BSS: run prepareFEP on every pair of ligands
 prepareFEP.py --input1 _solvated-ligands/12_water.prm7 _solvated-ligands/12_water_eq.rst7 --input2 _solvated-ligands/14d_water.prm7 _solvated-ligands/14d_water_eq.rst7 --output _solvated-perturbations-ligands/12_to_14d_free

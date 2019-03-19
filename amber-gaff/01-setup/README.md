@@ -26,7 +26,7 @@ solvate.py --input _ligands/12.prm7 _ligands/12.rst7 --output _solvated-ligands/
 solvate.py --input _ligands/14d.prm7 _ligands/14d.rst7 --output _solvated-ligands/14d_water --water tip3p --extent 20
 
 ## Step 4 BSS: Assemble each protein-ligand complex and solvate 
-combine.py --system1 _ligands/12.prm7 _ligands/12.rst7 --system2 _protein/proteiin-gas.prm7 _protein/protein-gas.rst7 --output prot-lig
+combine.py --system1 _ligands/12.prm7 _ligands/12.rst7 --system2 _protein/protein-gas.prm7 _protein/protein-gas.rst7 --output prot-lig
 
 solvate.py --input prot-lig.prm7 prot-lig.rst7 --output _solvated-complexes/12_prot_water --water tip3p --extent 20
 rm prot-lig.prm7 prot-lig.rst7

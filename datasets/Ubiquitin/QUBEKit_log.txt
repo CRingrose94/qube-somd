@@ -1,0 +1,29 @@
+XMLProtein.__init__ began at 2019-04-05 12:12:04.
+
+Docstring for XMLProtein.__init__:
+     None
+
+XMLProtein.__init__ finished in 00h:00m:05s.00679 at 2019-04-05 12:12:04.
+
+--------------------------------------------------
+
+XMLProtein.serialise_system began at 2019-04-05 12:12:04.
+
+Docstring for XMLProtein.serialise_system:
+     Serialise the input XML system using openmm.
+
+XMLProtein.serialise_system finished in 00h:00m:02s.28881 at 2019-04-05 12:12:04.
+
+--------------------------------------------------
+
+XMLProtein.gather_parameters began at 2019-04-05 12:12:05.
+
+Docstring for XMLProtein.gather_parameters:
+     This method parses the serialised xml file and collects the parameters ready to pass them
+        to build tree.
+        
+
+XMLProtein.gather_parameters finished in 00h:00m:04s.98294 at 2019-04-05 12:12:05.
+
+--------------------------------------------------
+

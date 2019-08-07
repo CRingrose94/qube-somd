@@ -110,7 +110,7 @@ equil_timestep = Parameter("equilibration timestep", 0.5 * femtosecond, """Times
 combining_rules = Parameter("combining rules", "arithmetic",
                             """Combining rules to use for the non-bonded interactions.""")
 
-use_CA_restraints = Parametes ("use CA restraints", False, """Whether to restraint the CA at the protein.""" )
+use_CA_restraints = Parameter ("use CA restraints", False, """Whether to restraint the CA at the protein.""" )
 
 timestep = Parameter("timestep", 2 * femtosecond, """Timestep for the dynamics simulation.""")
 

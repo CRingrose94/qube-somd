@@ -1,0 +1,91 @@
+
+# Workflow for FEP simulations using the quBq forcefield:
+# 1. Read all the parameters from the xml and pdb files, store them in a "molecule" object and write them 
+# to prm7 and rst7 files. We need the Sire version that supports the geometric combining rules:
+
+~/sire.app/bin/ipython 
+run ./qube_to_prmRst.py -p FILE.pdb -x FILE.xml
+
+#This script will generate the files of the qube-parameterised molecule
+#Now the process is the same as the one that we did for amber:
+
+~/biosimspace.app/bin/ipython 
+#1. Combine the protein (This is not necessary to be done, as I have done it.)
+run ./combine.py --system1 ../frag1/frag1_vmd.prm7 ../frag1/frag1_vmd.rst7 --system2 ../frag2/frag2_vmd.prm7 ../frag2/frag2_vmd.rst7 --output frag1_2 
+run ./combine.py --system1 frag1_2.prm7 frag1_2.rst7 --system2 ../frag3/frag3_vmd.prm7 ../frag3/frag3_vmd.rst7 --output frag1_2_3
+run ./combine.py --system1 frag1_2_3.prm7 frag1_2_3.rst7 --system2 ../frag4/frag4_vmd.prm7 ../frag4/frag4_vmd.rst7 --output qube_final 
+
+#2. Combine the protein with the ligands
+run ./combine.py --system1 G1_4a_qube.prm7 G1_4a_qube.rst7 --system2  qube_final.prm7 qube_final.rst7 --output 5ter_G1_4a
+run ./combine.py --system1 G1_4f_qube.prm7 G1_4f_qube.rst7 --system2  qube_final.prm7 qube_final.rst7 --output 5ter_G1_4f
+
+#3. solvate the ligands
+run ./solvate.py --input G1_4a_qube.prm7 G1_4a_qube.rst7 --output G1_4a_solvated --water tip3p --extent 20                                                                     
+run ./solvate.py --input G1_4f_qube.prm7 G1_4f_qube.rst7 --output G1_4f_solvated --water tip3p --extent 20 
+
+#4.Solvate the protein- ligand complexes
+run ./solvate.py --input 5ter_G1_4a.prm7 5ter_G1_4a.rst7 --output 5ter_G1_4a_solv --water tip3p --extent 20
+run ./solvate.py --input 5ter_G1_4f.prm7 5ter_G1_4f.rst7 --output 5ter_G1_4f_solv --water tip3p --extent 20
+
+#5. Equilibrate all the solvated systems
+run ./amberequilibration.py --input 5ter_G1_4a_solv.prm7 5ter_G1_4a_solv.rst7 --output 5ter_G1_4a_solv_eq 
+run ./amberequilibration.py --input 5ter_G1_4f_solv.prm7 5ter_G1_4f_solv.rst7 --output 5ter_G1_4f_solv_eq 
+
+run ./amberequilibration.py --input G1_4f_solvated.prm7 G1_4f_solvated.rst7 --output G1_4f_solv_eq 
+run ./amberequilibration.py --input G1_4a_solvated.prm7 G1_4a_solvated.rst7 --output G1_4a_solv_eq
+
+#6.Generate all the files for the FEP simulations
+run ./prepareFEP.py --input1 G1_4a_solvated.prm7 G1_4a_solv_eq.rst7 --input2 G1_4f_solvated.prm7 G1_4f_solv_eq.rst7 --output G1_4a_to_4f
+run ./prepareFEP.py --input2 G1_4a_solvated.prm7 G1_4a_solv_eq.rst7 --input1 G1_4f_solvated.prm7 G1_4f_solv_eq.rst7 --output G1_4f_to_4a
+
+#7. Run the FEP simulations for each lambda window: 
+#For a cluster with a slurm queuing system, the submission file would be something like: 
+
+#!/bin/bash
+#SBATCH --job-name=5ter_a_f_bound
+#SBATCH -o somd-array-gpu-%A.%a.out
+#SBATCH -p gpu
+#SBATCH -n 1
+#SBATCH --gres=gpu:1
+#SBATCH --time 24:00:00
+#SBATCH --array=0-10
+module load cuda/9.2
+echo "CUDA DEVICES:" $CUDA_VISIBLE_DEVICES
+lamvals=(0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 )
+lam=${lamvals[SLURM_ARRAY_TASK_ID]}
+sleep 5
+echo "lambda is: " $lam
+mkdir lambda-$lam
+cd lambda-$lam
+export OPENMM_PLUGIN_DIR=/export/users/sofia/sire-comb.app/lib/plugins/
+srun /export/users/sofia/sire-comb.app/bin/somd-freenrg -C ../../input/config.cfg -c ../../input/*.rst7 -t ../../input/*.prm7 -m ../../input/*.pert -l $lam -p CUDA
+wait
+cd ..
+
+
+# Configure file: 
+
+nmoves = 20000
+ncycles = 100
+buffered coordinates frequency = 5000
+save coordinates = True
+timestep = 2 * femtosecond
+constraint = hbonds-notperturbed
+hydrogen mass repartitioning factor = 1.0
+cutoff type = cutoffperiodic
+cutoff distance = 10*angstrom
+barostat = True
+andersen = True
+energy frequency = 250
+precision = mixed
+minimise = True
+equilibrate = False
+equilibration iterations = 5000
+center solute = True
+reaction field dielectric = 82.0
+minimal coordinate saving = True
+combining rules = geometric
+lambda array = 0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00
+
+#8 .Run the analysis:
+~/sire.app/bin/analyse_freenrg mbar --lam -i lam*/simfile.dat --temperature 298 -o out.dat --subsampling --percent 85 

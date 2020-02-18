@@ -1,5 +1,5 @@
 
-# Workflow for FEP simulations using the quBq forcefield:
+# Workflow for FEP simulations using the QuBe forcefield:
 # 1. Read all the parameters from the xml and pdb files, store them in a "molecule" object and write them 
 # to prm7 and rst7 files. We need the Sire version that supports the geometric combining rules:
 

@@ -805,4 +805,5 @@ if __name__ == '__main__':
     rst.writeToFile("%s.rst7"%pdb_name)
     print("Process completed!")
     print(" You can now continue your simulations with the files %s.prm7 and %s.rst7!"%(pdb_name, pdb_name))
+    print("Energy computed with the ",combining_rules.val, "combining rules is: ", system.energy())
     print("_________________________________________________________________________________________")
